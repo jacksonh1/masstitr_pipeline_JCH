@@ -9,16 +9,9 @@ import glob, os
 import multiprocessing
 import sys
 import pandas as pd
+import masstitr_tools as mt
 
 # TODO use argparser instead of positional arguments
-
-def get_exp_dirs(sample_key_file, experiment_directory):
-    samples = pd.read_csv(sample_key_file)
-    experiments = list(samples['experiment'].unique())
-    exp_dirs = []
-    for exp in experiments:
-        exp_dirs.append(os.path.join(experiment_directory, exp))
-    return exp_dirs
 
 
 def run(file, reformat_command):
@@ -37,8 +30,8 @@ def main():
     experiment_directory = str(sys.argv[1])
     sample_key_file = str(sys.argv[2])
     reformat_command = str(sys.argv[3])
-    exp_dirs = get_exp_dirs(sample_key_file, experiment_directory)
-    for dir in exp_dirs:
+    exp_dirs = mt.get_exp_dir_dict(sample_key_file, experiment_directory)
+    for dir in exp_dirs.values():
         p = multiprocessing.Pool()
         for f in glob.glob(os.path.join(dir,"barcode*")):
             # skip files ending in ".fq". Makes it easier if you rerun this script
